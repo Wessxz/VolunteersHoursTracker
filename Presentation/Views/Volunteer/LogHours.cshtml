@@ -1,0 +1,15 @@
+﻿@{
+    ViewData["Title"] = "Log Hours";
+    var volunteerId = ViewBag.VolunteerId;
+}
+
+<h2>Log Hours</h2>
+
+<form asp-action="LogHours" method="post">
+    <input type="hidden" name="volunteerId" value="@volunteerId" />
+    <div class="mb-3">
+        <label for="hours" class="form-label">Hours</label>
+        <input type="number" class="form-control" id="hours" name="hours" required min="0" />
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>

@@ -1,0 +1,17 @@
+﻿@model IEnumerable<VolunteerHoursTracker.Infrastructure.Entities.Volunteer>
+
+<h2>Top Volunteers</h2>
+<table class="table">
+    <tr>
+        <th>Name</th>
+        <th>Total Hours</th>
+    </tr>
+    @foreach (var v in Model)
+    {
+        <tr>
+            <td>@v.Name</td>
+            <td>@v.VolunteerHours.Sum(h => h.Hours)</td>
+        </tr>
+    }
+</table>
+<a asp-action="Index">Back to All Volunteers</a>
