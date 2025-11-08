@@ -26,6 +26,7 @@
                 <tr>
                     <th>Name</th>
                     <th>Email</th>
+                    <th>Age</th>
                     <th>Total Hours</th>
                     <th class="text-center">Actions</th>
                 </tr>
@@ -36,6 +37,7 @@
                     <tr>
                         <td>@v.Name</td>
                         <td>@v.Email</td>
+                        <td>@v.Age</td>
                         <td>@v.VolunteerHours.Sum(h => h.Hours)</td>
                         <td class="text-center">
                             <a asp-action="LogHours" asp-route-id="@v.Id" class="btn btn-sm btn-primary me-2">
@@ -91,6 +93,15 @@
                         <label for="email" class="form-label">Email</label>
                         <input type="email" class="form-control" id="email" name="email" required>
                     </div>
+                    <div class="mb-3">
+                        <label for="age" class="form-label">Age</label>
+                        <input type="number" class="form-control" id="age" name="age" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="hours" class="form-label">Hours</label>
+                        <input type="number" class="form-control" id="hours" name="hours" placeholder="Enter Hours">
+                    </div>
+
                 </div>
                 <div class="modal-footer">
                     <button type="submit" class="btn btn-success">Add Volunteer</button>
@@ -113,7 +124,8 @@
             let cells = rows[i].getElementsByTagName("td");
             let name = cells[0].textContent.toLowerCase();
             let email = cells[1].textContent.toLowerCase();
-            if (name.includes(filter) || email.includes(filter)) {
+            let age = cells[2].textContent.toLowerCase();
+            if (name.includes(filter) || email.includes(filter) || age.includes(filter)) {
                 rows[i].style.display = "";
             } else {
                 rows[i].style.display = "none";

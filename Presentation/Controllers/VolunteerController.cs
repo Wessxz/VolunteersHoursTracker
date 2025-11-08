@@ -2,6 +2,7 @@
 using VolunteerHoursTracker.Service.Interfaces;
 using VolunteerHoursTracker.Infrastructure.Entities;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace VolunteerHoursTracker.Presentation.Controllers
@@ -24,7 +25,7 @@ namespace VolunteerHoursTracker.Presentation.Controllers
 
         // POST: /Volunteer/Create
         [HttpPost]
-        public async Task<IActionResult> Create(string name, string email)
+        public async Task<IActionResult> Create(string name, string email, int age, int hours)
         {
             if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(email))
             {
@@ -32,12 +33,24 @@ namespace VolunteerHoursTracker.Presentation.Controllers
                 return View("Index", await _service.GetAllVolunteers());
             }
 
-            await _service.AddVolunteer(new Volunteer
+            var volunteer = new Volunteer
             {
                 Name = name,
                 Email = email,
+                Age = age,
                 VolunteerHours = new List<VolunteerHour>()
-            });
+            };
+
+            if (hours > 0)
+            {
+                volunteer.VolunteerHours.Add(new VolunteerHour
+                {
+                    Hours = hours,
+                    Date = System.DateTime.Now
+                });
+            }
+
+            await _service.AddVolunteer(volunteer);
 
             return RedirectToAction(nameof(Index));
         }
@@ -49,7 +62,7 @@ namespace VolunteerHoursTracker.Presentation.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // Optional: Edit (GET)
+        // GET: Edit Volunteer
         public async Task<IActionResult> Edit(int id)
         {
             var volunteer = await _service.GetVolunteerById(id);
@@ -57,23 +70,35 @@ namespace VolunteerHoursTracker.Presentation.Controllers
             return View(volunteer);
         }
 
-        // Optional: Edit (POST)
+        // POST: Edit Volunteer
         [HttpPost]
-        public async Task<IActionResult> Edit(Volunteer model)
+        public async Task<IActionResult> Edit(Volunteer model, int hours)
         {
             if (!ModelState.IsValid) return View(model);
+
+            // Replace VolunteerHours with new total
+            model.VolunteerHours = new List<VolunteerHour>
+            {
+                new VolunteerHour
+                {
+                    Hours = hours,
+                    Date = System.DateTime.Now
+                }
+            };
+
             await _service.UpdateVolunteer(model);
+
             return RedirectToAction(nameof(Index));
         }
 
-        // ✅ Add GET action for logging hours
+        // GET: Log Hours
         public IActionResult LogHours(int id)
         {
             ViewBag.VolunteerId = id;
             return View();
         }
 
-        // ✅ Add POST action for logging hours
+        // POST: Log Hours
         [HttpPost]
         public async Task<IActionResult> LogHours(int volunteerId, int hours)
         {

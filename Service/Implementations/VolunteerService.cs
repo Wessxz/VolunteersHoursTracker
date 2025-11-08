@@ -43,14 +43,34 @@ namespace VolunteerHoursTracker.Service.Implementations
         // Update existing volunteer
         public async Task UpdateVolunteer(Volunteer volunteer)
         {
-            var existing = await _context.Volunteers.FindAsync(volunteer.Id);
+            var existing = await _context.Volunteers
+                                         .Include(v => v.VolunteerHours)
+                                         .FirstOrDefaultAsync(v => v.Id == volunteer.Id);
+
             if (existing != null)
             {
                 existing.Name = volunteer.Name;
                 existing.Email = volunteer.Email;
+                existing.Age = volunteer.Age;
+
+                // Replace old hours with new
+                existing.VolunteerHours.Clear();
+                if (volunteer.VolunteerHours != null && volunteer.VolunteerHours.Any())
+                {
+                    foreach (var h in volunteer.VolunteerHours)
+                    {
+                        existing.VolunteerHours.Add(new VolunteerHour
+                        {
+                            Hours = h.Hours,
+                            Date = h.Date
+                        });
+                    }
+                }
+
                 await _context.SaveChangesAsync();
             }
         }
+
 
         // Delete volunteer
         public async Task DeleteVolunteer(int id)
